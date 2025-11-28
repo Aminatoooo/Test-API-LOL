@@ -7,13 +7,55 @@ const app = express();
 const PORT = process.env.PORT || 3000;
 const RIOT_API_KEY = process.env.RIOT_API_KEY;
 
+// Validate API key on startup
+if (!RIOT_API_KEY) {
+    console.warn('Warning: RIOT_API_KEY environment variable is not set. API requests will fail.');
+}
+
 app.use(cors());
 app.use(express.json());
 app.use(express.static(path.join(__dirname, 'public')));
 
-// Riot API base URLs
-const RIOT_ACCOUNT_API = 'https://europe.api.riotgames.com';
-const RIOT_EUW_API = 'https://euw1.api.riotgames.com';
+// Regional API endpoints mapping
+const REGIONAL_APIS = {
+    'europe': 'https://europe.api.riotgames.com',
+    'americas': 'https://americas.api.riotgames.com',
+    'asia': 'https://asia.api.riotgames.com',
+    'sea': 'https://sea.api.riotgames.com'
+};
+
+const PLATFORM_APIS = {
+    'euw1': 'https://euw1.api.riotgames.com',
+    'eun1': 'https://eun1.api.riotgames.com',
+    'na1': 'https://na1.api.riotgames.com',
+    'kr': 'https://kr.api.riotgames.com',
+    'jp1': 'https://jp1.api.riotgames.com',
+    'br1': 'https://br1.api.riotgames.com',
+    'la1': 'https://la1.api.riotgames.com',
+    'la2': 'https://la2.api.riotgames.com',
+    'oc1': 'https://oc1.api.riotgames.com',
+    'tr1': 'https://tr1.api.riotgames.com',
+    'ru': 'https://ru.api.riotgames.com',
+    'ph2': 'https://ph2.api.riotgames.com',
+    'sg2': 'https://sg2.api.riotgames.com',
+    'th2': 'https://th2.api.riotgames.com',
+    'tw2': 'https://tw2.api.riotgames.com',
+    'vn2': 'https://vn2.api.riotgames.com'
+};
+
+// Default region configuration
+const DEFAULT_REGION = process.env.DEFAULT_REGION || 'europe';
+const DEFAULT_PLATFORM = process.env.DEFAULT_PLATFORM || 'euw1';
+
+// Helper function to get regional API URL
+function getRegionalApi(region) {
+    return REGIONAL_APIS[region] || REGIONAL_APIS[DEFAULT_REGION];
+}
+
+// Helper function to get platform API URL
+function getPlatformApi(platform) {
+    return PLATFORM_APIS[platform] || PLATFORM_APIS[DEFAULT_PLATFORM];
+}
 
 // Helper function to make Riot API requests
 async function riotApiRequest(url) {
@@ -35,8 +77,10 @@ async function riotApiRequest(url) {
 app.get('/api/account/:gameName/:tagLine', async (req, res) => {
     try {
         const { gameName, tagLine } = req.params;
+        const region = req.query.region || DEFAULT_REGION;
+        const regionalApi = getRegionalApi(region);
         const accountData = await riotApiRequest(
-            `${RIOT_ACCOUNT_API}/riot/account/v1/accounts/by-riot-id/${encodeURIComponent(gameName)}/${encodeURIComponent(tagLine)}`
+            `${regionalApi}/riot/account/v1/accounts/by-riot-id/${encodeURIComponent(gameName)}/${encodeURIComponent(tagLine)}`
         );
         res.json(accountData);
     } catch (error) {
@@ -48,8 +92,10 @@ app.get('/api/account/:gameName/:tagLine', async (req, res) => {
 app.get('/api/summoner/:puuid', async (req, res) => {
     try {
         const { puuid } = req.params;
+        const platform = req.query.platform || DEFAULT_PLATFORM;
+        const platformApi = getPlatformApi(platform);
         const summonerData = await riotApiRequest(
-            `${RIOT_EUW_API}/lol/summoner/v4/summoners/by-puuid/${encodeURIComponent(puuid)}`
+            `${platformApi}/lol/summoner/v4/summoners/by-puuid/${encodeURIComponent(puuid)}`
         );
         res.json(summonerData);
     } catch (error) {
@@ -61,8 +107,10 @@ app.get('/api/summoner/:puuid', async (req, res) => {
 app.get('/api/ranked/:summonerId', async (req, res) => {
     try {
         const { summonerId } = req.params;
+        const platform = req.query.platform || DEFAULT_PLATFORM;
+        const platformApi = getPlatformApi(platform);
         const rankedData = await riotApiRequest(
-            `${RIOT_EUW_API}/lol/league/v4/entries/by-summoner/${encodeURIComponent(summonerId)}`
+            `${platformApi}/lol/league/v4/entries/by-summoner/${encodeURIComponent(summonerId)}`
         );
         res.json(rankedData);
     } catch (error) {
@@ -74,9 +122,11 @@ app.get('/api/ranked/:summonerId', async (req, res) => {
 app.get('/api/matches/:puuid', async (req, res) => {
     try {
         const { puuid } = req.params;
+        const region = req.query.region || DEFAULT_REGION;
+        const regionalApi = getRegionalApi(region);
         const count = req.query.count || 10;
         const matchIds = await riotApiRequest(
-            `${RIOT_ACCOUNT_API}/lol/match/v5/matches/by-puuid/${encodeURIComponent(puuid)}/ids?count=${count}`
+            `${regionalApi}/lol/match/v5/matches/by-puuid/${encodeURIComponent(puuid)}/ids?count=${count}`
         );
         res.json(matchIds);
     } catch (error) {
@@ -88,8 +138,10 @@ app.get('/api/matches/:puuid', async (req, res) => {
 app.get('/api/match/:matchId', async (req, res) => {
     try {
         const { matchId } = req.params;
+        const region = req.query.region || DEFAULT_REGION;
+        const regionalApi = getRegionalApi(region);
         const matchData = await riotApiRequest(
-            `${RIOT_ACCOUNT_API}/lol/match/v5/matches/${encodeURIComponent(matchId)}`
+            `${regionalApi}/lol/match/v5/matches/${encodeURIComponent(matchId)}`
         );
         res.json(matchData);
     } catch (error) {

@@ -5,11 +5,13 @@ const path = require('path');
 
 const app = express();
 const PORT = process.env.PORT || 3000;
-const RIOT_API_KEY = process.env.RIOT_API_KEY;
+
+// API Key configuration - uses environment variable or fallback
+const RIOT_API_KEY = process.env.RIOT_API_KEY || 'RGAPI-6cab17d5-4cee-4ac8-8cc7-780d278ca29d';
 
 // Validate API key on startup
 if (!RIOT_API_KEY) {
-    console.warn('Warning: RIOT_API_KEY environment variable is not set. API requests will fail.');
+    console.warn('Warning: RIOT_API_KEY is not configured. API requests will fail.');
 }
 
 app.use(cors());

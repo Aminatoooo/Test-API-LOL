@@ -1,0 +1,67 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>LoL Account Finder - Recherche de compte League of Legends</title>
+    <link rel="stylesheet" href="style.css">
+    <link href="https://fonts.googleapis.com/css2?family=Beaufort+for+LOL:wght@700&family=Spiegel:wght@400;700&display=swap" rel="stylesheet">
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>🎮 LoL Account Finder</h1>
+            <p class="subtitle">Recherchez un compte League of Legends et consultez ses informations</p>
+        </header>
+
+        <div class="search-section">
+            <div class="search-box">
+                <input type="text" id="gameName" placeholder="Nom de joueur (ex: Faker)" required>
+                <span class="tag-separator">#</span>
+                <input type="text" id="tagLine" placeholder="Tag (ex: KR1)" required>
+                <button id="searchBtn" onclick="searchAccount()">
+                    <span>Rechercher</span>
+                </button>
+            </div>
+            <p class="hint">Entrez le Riot ID complet (Nom#Tag)</p>
+        </div>
+
+        <div id="loading" class="loading hidden">
+            <div class="spinner"></div>
+            <p>Chargement des données...</p>
+        </div>
+
+        <div id="error" class="error-message hidden"></div>
+
+        <div id="results" class="results hidden">
+            <div class="account-info">
+                <div class="profile-header">
+                    <img id="profileIcon" src="" alt="Profile Icon" class="profile-icon">
+                    <div class="profile-details">
+                        <h2 id="summonerName"></h2>
+                        <p id="riotId" class="riot-id"></p>
+                        <p id="summonerLevel" class="level"></p>
+                    </div>
+                </div>
+            </div>
+
+            <div class="ranked-section">
+                <h3>📊 Statistiques Classées</h3>
+                <div id="rankedInfo" class="ranked-cards"></div>
+            </div>
+
+            <div class="match-history">
+                <h3>📜 Historique des Matchs</h3>
+                <div id="matchList" class="match-list"></div>
+            </div>
+        </div>
+    </div>
+
+    <footer>
+        <p>Ce site n'est pas approuvé par Riot Games et ne reflète pas les vues ou opinions de Riot Games.</p>
+        <p>Riot Games et League of Legends sont des marques déposées de Riot Games, Inc.</p>
+    </footer>
+
+    <script src="script.js"></script>
+</body>
+</html>

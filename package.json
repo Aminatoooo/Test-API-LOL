@@ -1,0 +1,19 @@
+{
+  "name": "test-api-lol",
+  "version": "1.0.0",
+  "description": "League of Legends account finder using Riot Games API",
+  "main": "server.js",
+  "scripts": {
+    "start": "node server.js",
+    "dev": "node server.js",
+    "test": "echo \"No tests specified\" && exit 0"
+  },
+  "keywords": ["league-of-legends", "riot-games", "api"],
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "cors": "^2.8.5",
+    "dotenv": "^17.2.3",
+    "express": "^5.1.0"
+  }
+}
